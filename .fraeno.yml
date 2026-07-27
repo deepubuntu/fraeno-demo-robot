@@ -1,0 +1,72 @@
+version: 1
+project:
+  name: onboarding-robot
+target:
+  ros_distribution: humble
+  operating_system: ubuntu
+  operating_system_version: '22.04'
+  architecture: amd64
+updates:
+  update_types:
+  - major
+  - minor
+  - patch
+  - digest
+  - revision
+  - unknown
+  cooldown_days: 7
+  schedule:
+    interval: weekly
+    day: monday
+  max_open_pull_requests: 5
+validation:
+  steps:
+  - name: build ROS 2 workspace
+    command:
+    - bash
+    - -lc
+    - colcon build --event-handlers console_direct+
+    timeout_seconds: 600
+  observe:
+    command:
+    - bash
+    - -lc
+    - source install/setup.bash && python3 -m fraeno.cli observe-ros2 --config "$FRAENO_TRUSTED_ROOT/.fraeno.yml"
+    timeout_seconds: 120
+    ros2:
+      launch_command:
+      - ros2
+      - launch
+      - fraeno_ros_fixture
+      - robot.launch.py
+      warmup_seconds: 2
+      graph_stabilization_timeout_seconds: 15
+      graph_stabilization_interval_seconds: 0.25
+      graph_stabilization_samples: 3
+      sample_seconds: 5
+      measurement_repetitions: 3
+      rate_topics:
+      - /sensor/reading
+      - /robot/command
+      diagnostics_topics:
+      - /diagnostics
+      transform_topics:
+      - /tf_static
+      shutdown_timeout_seconds: 5
+  contract:
+    required_nodes:
+    - /sensor_driver
+    - /controller
+    required_topics:
+    - /sensor/reading
+    - /robot/command
+    required_services:
+    - /robot/health
+    required_actions:
+    - /robot/move
+    required_transforms:
+    - base_link->sensor_link
+    required_diagnostics:
+    - controller
+    - sensor_driver
+    maximum_topic_rate_regression_percent: 30

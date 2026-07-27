@@ -1,0 +1,89 @@
+name: Fraeno robot integration
+run-name: Fraeno ${{ inputs.delivery_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Trusted base commit
+        required: true
+        type: string
+      head_sha:
+        description: Candidate commit
+        required: true
+        type: string
+      base_repository:
+        description: Trusted base repository
+        required: true
+        type: string
+      head_repository:
+        description: Candidate repository
+        required: true
+        type: string
+      pull_request_number:
+        description: Pull request number
+        required: true
+        type: string
+      check_run_id:
+        description: Fraeno check run
+        required: true
+        type: string
+      delivery_id:
+        description: GitHub webhook delivery
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fraeno-pr-${{ inputs.pull_request_number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    env:
+      FRAENO_RUNNER_IMAGE: ${{ vars.FRAENO_RUNNER_IMAGE }}
+    steps:
+      - name: Require an immutable Fraeno runner
+        run: |
+          if [[ "$FRAENO_RUNNER_IMAGE" != *@sha256:* ]]; then
+            echo "Set FRAENO_RUNNER_IMAGE to a Fraeno runner pinned by digest." >&2
+            exit 2
+          fi
+
+      - name: Check out trusted baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.base_repository }}
+          ref: ${{ inputs.base_sha }}
+          path: baseline
+          persist-credentials: false
+
+      - name: Check out candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.head_repository }}
+          ref: ${{ inputs.head_sha }}
+          path: candidate
+          persist-credentials: false
+
+      - name: Run isolated validation
+        run: >-
+          bash baseline/.github/fraeno/run-isolated-validation.sh
+          "$FRAENO_RUNNER_IMAGE"
+          "$PWD/baseline"
+          "$PWD/candidate"
+          "$PWD/baseline/.fraeno.yml"
+          "$PWD/fraeno-report.json"
+
+      - name: Upload complete Fraeno report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: fraeno-report-${{ inputs.check_run_id }}
+          path: fraeno-report.json
+          if-no-files-found: error
+          retention-days: 14
