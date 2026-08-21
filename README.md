@@ -56,10 +56,10 @@ Name
 FRAENO_RUNNER_IMAGE
 
 Value
-us-central1-docker.pkg.dev/deepubuntu-32f9e/fraeno-runner/runner@sha256:8f932a56209a0a8ecfbda3fff9958fd9b710d1d0065a9312486e9acd674fdcfc
+us-central1-docker.pkg.dev/fraeno-prod/fraeno-runner/runner@sha256:399a573b5b81d8baf3570f491c7958cc15b4ffeecadd760c0906ef8d7825c8d9
 ```
 
-The image is public and pinned to the Fraeno `v0.2.3` release.
+The image is public and pinned to the Fraeno `v0.2.4` release.
 
 ## 4. Watch a safe update pass
 
