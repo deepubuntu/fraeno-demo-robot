@@ -107,4 +107,5 @@ physical behavior is safe.
 For your own ROS 2 repository, follow the
 [complete onboarding guide](https://github.com/deepubuntu/fraeno/blob/main/docs/onboarding.md).
 
-See the original [successful external check](https://github.com/deepubuntu/fraeno-demo-robot/actions/runs/30368351839).
+See a real [safe external trial pass](https://github.com/Thabhelo/fraeno-demo-trial/actions/runs/32513196936)
+and a [dangerous external update blocked](https://github.com/Thabhelo/fraeno-demo-trial/actions/runs/32513414015).
