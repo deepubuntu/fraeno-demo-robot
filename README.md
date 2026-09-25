@@ -1,25 +1,17 @@
 # Fraeno demo robot
 
-Try Fraeno without robot hardware or an existing robotics repository. This
-template contains a small ROS 2 Humble robot with a sensor driver, controller,
-health service, movement action, diagnostics, and transform.
+Try a fixed Fraeno demonstration without robot hardware, production engine
+access, or an existing robotics repository. This template contains a small ROS
+2 Humble robot fixture and a deliberately limited public check.
 
 You will open two pull requests:
 
-1. A harmless change that Fraeno passes.
-2. A simulated driver update that still builds but stops sensor data from
-   reaching the controller. Fraeno blocks it.
+1. A harmless documentation change that passes.
+2. A known fixture change that represents broken sensor delivery and is blocked.
 
-The complete trial runs in GitHub Actions. It does not connect to physical
-hardware.
-
-## What you need
-
-- a GitHub account
-- access to the Fraeno private beta
-- GitHub Actions enabled on your copy of this repository
-
-Fraeno currently supports ROS 2 Humble on Ubuntu 22.04 and `amd64`.
+The public demonstration recognizes only this repository and three built-in
+fixture versions. It does not contain Fraeno's proprietary validation engine,
+run arbitrary robot commands, or validate customer repositories.
 
 ## 1. Create your copy
 
@@ -30,82 +22,58 @@ trial.
 You can also [fork this repository](https://github.com/deepubuntu/fraeno-demo-robot/fork).
 If GitHub pauses Actions on the fork, open its **Actions** tab and enable them.
 
-Clone your new repository. Replace `YOUR-GITHUB-NAME` below:
+Clone your new repository and replace `YOUR-GITHUB-NAME` below:
 
 ```bash
 git clone https://github.com/YOUR-GITHUB-NAME/fraeno-demo-robot.git
 cd fraeno-demo-robot
 ```
 
-## 2. Request access and install Fraeno
+No Fraeno App installation, private runner image, repository variable, or beta
+approval is required for this fixed demonstration.
 
-1. [Request private-beta access](https://fraeno.com/#access). Include the
-   GitHub username that owns your copy.
-2. [Install the Fraeno GitHub App](https://github.com/apps/fraeno-robotics) on
-   only your demo repository.
-3. Wait for your installation to be approved. Before approval, Fraeno reports
-   a neutral **Fraeno is in private beta** check and does not run the robot.
-
-## 3. Pin the Fraeno runner
-
-In your repository, open **Settings**, then **Secrets and variables**,
-**Actions**, and **Variables**. Create this repository variable:
-
-```text
-Name
-FRAENO_RUNNER_IMAGE
-
-Value
-us-central1-docker.pkg.dev/fraeno-prod/fraeno-runner/runner@sha256:399a573b5b81d8baf3570f491c7958cc15b4ffeecadd760c0906ef8d7825c8d9
-```
-
-The image is public and pinned to the Fraeno `v0.2.4` release.
-
-## 4. Watch a safe update pass
+## 2. Watch a harmless change pass
 
 Create a documentation-only pull request:
 
 ```bash
-git switch -c fraeno/safe-update
-printf '\nFraeno safe-update trial completed.\n' >> README.md
+git switch -c fraeno/safe-demo
+printf '\nFraeno safe demo completed.\n' >> README.md
 git add README.md
-git commit -m "Try a safe robot update"
-git push --set-upstream origin fraeno/safe-update
+git commit -m "Try the safe Fraeno demo"
+git push --set-upstream origin fraeno/safe-demo
 ```
 
-Open the pull request on GitHub. The **Fraeno / robot integration** check runs
-the trusted robot and the candidate robot. Both behave the same, so the check
-passes. Merge or close the pull request before continuing.
+Open the pull request on GitHub. The **Fraeno fixed public demo** check compares
+the two recognized fixture versions and passes because the robot behavior is
+unchanged. Merge or close the pull request before continuing.
 
-## 5. Watch a dangerous update get blocked
+## 3. Watch the known regression get blocked
 
 Return to the default branch and create a second pull request:
 
 ```bash
 git switch main
 git pull --ff-only
-git switch -c fraeno/dangerous-update
+git switch -c fraeno/dangerous-demo
 printf '2.0.0\n' > fraeno-fixture-version.txt
 git add fraeno-fixture-version.txt
-git commit -m "Simulate a dangerous sensor-driver update"
-git push --set-upstream origin fraeno/dangerous-update
+git commit -m "Simulate the known sensor delivery regression"
+git push --set-upstream origin fraeno/dangerous-demo
 ```
 
-Open the pull request on GitHub. Version `2.0.0` changes the sensor publisher
-from reliable delivery to best effort. The project still builds, but the
-controller stops receiving sensor readings and `/robot/command` falls silent.
-Fraeno detects the changed behavior and blocks the pull request.
+Open the pull request. Version `2.0.0` maps to the fixed demonstration where the
+sensor publisher becomes best effort, the reliable controller receives no
+sensor data, robot commands stop, and diagnostics report an error. The check
+blocks the pull request.
 
-Do not merge the dangerous update. Close its pull request when you finish.
+Do not merge the dangerous demonstration. Close its pull request when finished.
 
-## What the result means
+## What this demonstrates
 
-A passing check means the behaviors declared in [`.fraeno.yml`](.fraeno.yml)
-did not regress in this virtual test. It does not prove that every possible
-physical behavior is safe.
+The demonstration shows the product interaction and a truthful historical
+Fraeno pass/block scenario. It does not execute the production engine, inspect
+arbitrary repositories, or certify physical safety.
 
-For your own ROS 2 repository, follow the
-[complete onboarding guide](https://github.com/deepubuntu/fraeno/blob/main/docs/onboarding.md).
-
-See a real [safe v0.2.4 trial pass](https://github.com/Thabhelo/fraeno-demo-trial/actions/runs/32518024104)
-and a [dangerous v0.2.4 update blocked](https://github.com/Thabhelo/fraeno-demo-trial/actions/runs/32518047757).
+To evaluate Fraeno on a real ROS 2 repository, request a guided private trial at
+[fraeno.com](https://fraeno.com/#access).
